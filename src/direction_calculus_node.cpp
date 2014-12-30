@@ -39,6 +39,8 @@ int main(int argc, char **argv)
     vector<Point2f> old_interest_points, interest_points;
     char* status;
     float* track_error;
+    int counter1, counter;
+    int x,y;
 
     while (ros::ok())
     {
@@ -58,6 +60,7 @@ int main(int argc, char **argv)
              goodFeaturesToTrack(translation_prev, old_interest_points, 500, 0.01, 10, Mat(), 3, 0, 0.04);
              goodFeaturesToTrack(translation, interest_points, 500, 0.01, 10, Mat(), 3, 0, 0.04);
              calcOpticalFlowPyrLK(translation_prev, translation, old_interest_points, interest_points, status, track_error);
+
 
 
 
