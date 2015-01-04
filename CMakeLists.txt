@@ -6,6 +6,8 @@ find_package(catkin REQUIRED COMPONENTS
   image_transport
   roscpp
   std_msgs
+  geometry_msgs
+  sensor_msgs
 )
 
 catkin_package()
