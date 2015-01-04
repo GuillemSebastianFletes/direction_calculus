@@ -35,13 +35,9 @@ void disparityCallback(const ImageConstPtr& disp)
 }
 
 
-/*cv::Mat grayOld;
-geometry_msgs::Point point;*/
-
-
 void position_calculus()
 {
-    //buvle control variables
+    //bucle control variables
     static int i=0, j=0, a=0;
 
     //filtering variables
@@ -58,6 +54,20 @@ void position_calculus()
     //static vector<Point2f> OldFeatures;
     static vector<Point2f> NewFeatures;
     static vector<Point2f> FeaturesDetected;
+
+    //movement calculation's variables
+    static double angle;
+    double angles[];
+    int position_in_angles=0;
+    int max_position;
+
+    //More repetitive angle calculation's variable
+    double repited_angle[];
+    int number_of_repetitions[];
+    int repited_angle_counter;
+    int size_repited_angle;
+    int max_repetition;
+    double max_value;
 
     //Obtenemos el tamaño de la imagen
     int rows = image.rows;
@@ -79,66 +89,45 @@ void position_calculus()
     {
         if(FeaturesDetected[features_vector_position])
         {
-            //Eliminamos outliers:
-
-            //Comprobando sus longitudes y descartando las mayores
+            //Outlieres purge checking the longitude and ignoring the biggest ones
             x=(NewFeatures[features_vector_position].x)-(OldFeatures[features_vector_position].x);
             y=(NewFeatures[features_vector_position].y)-(OldFeatures[features_vector_position].y);
             distance=sqrt((x*x)+(y*y));
-            //cout << distance << endl;	//esta linea es solo para comprobar las distancias, no sirve
+            //cout << distance << endl;	//this line is only useful if the user wans to check the distances
             if((distance<param_high)&&(distance>param_low))
             {
-                //Agrupando vectores y descartando los alejados
-
-                //Comprobamos el angulo de cada vector
-                static double angle = (atan2 (y,x) * 180.0 / PI)*(-1);
-
-                //Dibujamos las lineas que conectan las posiciones antiguas y nuevas
-                if((angle<90)&&(angle>0))	//Adelantamiento
-                {
-                    line(image,OldFeatures[features_vector_position],NewFeatures[features_vector_position],Scalar(0,0,255));
-
-                    /*Eliminamos las detecciones de adelantamiento erroneas
-featuresDetection[j]=OldFeatures[features_vector_position];
-*/
-                    j++;
-                }
-                else	//No adelantamiento
-                {
-                    line(image,OldFeatures[features_vector_position],NewFeatures[features_vector_position],Scalar(0,255,0));
-                }
+                //Checking each array's angle
+                angle = (atan2 (y,x) * 180.0 / PI)*(-1);
+                angles[position_in_angles]=angle;
+                position_in_angles++;
             }
         }
     }
+    max_position=position_in_angles;
+    for(position_in_angles=0;position_in_angles<max_position;position_in_angles++)
+    {
+        for(repited_angle_counter=0;repited_angle_counter<size_repited_angle;repited_angle+++)
+        {
+            if (repited_angle[repited_angle_counter] != angles[position_in_angles])
+            {
+                repited_angle[repited_angle_counter] = angles[position_in_angles];
+                number_of_repetitions[repited_angle_counter]++;
+                if(number_of_repetitions[repited_angle_counter]>max_repetition)
+                {
+                    max_repetition=number_of_repetitions[repited_angle_counter];
+                    max_value = repited_angle[repited_angle_counter];
+                }
+            }
+        }
 
-    /*Comprobamos que la deteccion haya sido correcta
-if(j>50)
-{
-cout<<endl<<"Se esta produciendo un adelantamiento"<<endl<<a<<endl;
-}
-else
-{
-cout<<endl<<" "<<endl<<a<<endl;
-}*/
-    a++;
+    }
 
-    point.x = 12;
-    point.y = 56;
-
-    //cv::imshow("Window", image);
-    cv::imshow("Window2", image_roi);
-    cv::waitKey(3);
 
     NewFeatures = OldFeatures;
-    translation_prev = translation
+    translation_prev = translation;
 }
 
-i++;
-image_roi.copyTo(grayOld);
 
-//Deteccion de bordes
-goodFeaturesToTrack(grayOld, OldFeatures, 500, 0.01, 10, Mat(), 3, 0, 0.04);
-}
 
 int main(int argc, char **argv)
 {
@@ -151,12 +140,17 @@ int main(int argc, char **argv)
     image_transport::ImageTransport it(nh);
 
     image_transport::Subscriber sub = it.subscribe("xb3_no_rect/left", 1, imageCallback); //usb_cam/image_rawxb3_no_rect/left
-    while(ros::ok()){
+    while(ros::ok())
+    {
         ros::spinOnce();
-        if(new_overtaking){
+        if(new_overtaking)
+        {
             overtaking_pub.publish(point);
             new_overtaking = 0;
         }
+
+        position_calculus();//this function is going to calculate the direction
+
         loop_rate.sleep();
     }
 
