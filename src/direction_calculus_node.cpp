@@ -68,6 +68,11 @@ void position_calculus()
     int size_repited_angle;
     int max_repetition;
     double max_value;
+    bool esta=false;
+
+    //Mean variables
+    int number_of_elements=0;
+    double final_angle;
 
     //Obtenemos el tamaño de la imagen
     int rows = image.rows;
@@ -85,11 +90,11 @@ void position_calculus()
     goodFeaturesToTrack(translation, NewFeatures, 500, 0.01, 10, Mat(), 3, 0, 0.04);
     calcOpticalFlowPyrLK(translation_prev,translation,OldFeatures,NewFeatures,FeaturesDetected,err);
 
+    //Outlieres purge checking the longitude and ignoring the biggest ones
     for(size_t features_vector_position=0; features_vector_position<NewFeatures.size(); features_vector_position++)
     {
         if(FeaturesDetected[features_vector_position])
         {
-            //Outlieres purge checking the longitude and ignoring the biggest ones
             x=(NewFeatures[features_vector_position].x)-(OldFeatures[features_vector_position].x);
             y=(NewFeatures[features_vector_position].y)-(OldFeatures[features_vector_position].y);
             distance=sqrt((x*x)+(y*y));
@@ -103,24 +108,49 @@ void position_calculus()
             }
         }
     }
+
     max_position=position_in_angles;
+
+    //direction calculus
     for(position_in_angles=0;position_in_angles<max_position;position_in_angles++)
     {
-        for(repited_angle_counter=0;repited_angle_counter<size_repited_angle;repited_angle+++)
+        for(repited_angle_counter=0;repited_angle_counter<size_repited_angle;repited_angle_counter+++)
         {
-            if (repited_angle[repited_angle_counter] != angles[position_in_angles])
+            if (repited_angle[repited_angle_counter] == angles[position_in_angles])
             {
-                repited_angle[repited_angle_counter] = angles[position_in_angles];
                 number_of_repetitions[repited_angle_counter]++;
+                esta=true;
+
                 if(number_of_repetitions[repited_angle_counter]>max_repetition)
                 {
                     max_repetition=number_of_repetitions[repited_angle_counter];
                     max_value = repited_angle[repited_angle_counter];
+
                 }
+                break;//if there are the same the loop should stop
             }
+        }
+        if(!esta)
+        {
+            repited_angle[repited_angle_counter] = angles[position_in_angles];
+            size_repited_angle++;
+        }
+        esta=false;
+    }
+
+    //Mean calculation
+    for(repited_angle_counter=0;repited_angle_counter<size_repited_angle;repited_angle+++)
+    {
+        if(number_of_repetitions[repited_angle_counter]==0.8*max_repetition)
+        {
+            final_angle=repited_angle[repited_angle_counter]*number_of_repetitions[repited_angle_counter];
+            number_of_elements=number_of_elements+number_of_repetitions[repited_angle_counter]
         }
 
     }
+
+    final_angle=final_angle/number_of_elements;
+
 
 
     NewFeatures = OldFeatures;
