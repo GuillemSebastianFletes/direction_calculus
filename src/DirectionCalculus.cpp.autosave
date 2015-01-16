@@ -1,8 +1,8 @@
 #include <DirectionCalculus.hpp>
 
 
-Direct
-LaserTreshoold::LaserTreshoold(ros::NodeHandle &nh)
+DirectionCalculus::DirectionCalculus(ros::NodeHandle &n)
+
 {
     nodehandle_ = nh;
     scan_sub_ = nodehandle_.subscribe("scan", 1, &LaserTreshoold::scanCallback, this);
@@ -12,7 +12,7 @@ LaserTreshoold::LaserTreshoold(ros::NodeHandle &nh)
 }
 
 // Destructor
-LaserTreshoold::~LaserTreshoold(){}
+DirectionCalculus::DirectionCalculus(){}
 
 // Init
 void LaserTreshoold::init(){}
@@ -110,10 +110,9 @@ void position_calculus()
 
     else
     {
-        calcOpticalFlowPyrLK(translation_prev,translation,OldFeatures,NewFeatures,FeaturesDetected,err);//v l coincide la detectada con la vieja y er
-        //nueva
+        calcOpticalFlowPyrLK(translation_prev,translation,OldFeatures,NewFeatures,FeaturesDetected,err);
         //Outlieres purge checking the longitude and ignoring the biggest ones
-        for(size_t features_vector_position=0; features_vector_position<NewFeatures.size(); features_vector_position++)//feature_vector poition mejor llamarlo indice
+        for(size_t features_vector_position=0; features_vector_position<NewFeatures.size(); features_vector_position++)
         {
             if(FeaturesDetected[features_vector_position])
             {
@@ -131,7 +130,7 @@ void position_calculus()
             }
         }
 
-        //max_position=position_in_angles;
+        max_position=position_in_angles;
 
         //angle calculus
         for(position_in_angles=0;position_in_angles<max_position;position_in_angles++)
