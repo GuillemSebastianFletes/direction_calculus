@@ -12,15 +12,14 @@ find_package(catkin REQUIRED COMPONENTS
 
 catkin_package()
 
+include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
 )
 
 ## Declare a cpp library
-# add_library(direction_calculus
-#   src/${PROJECT_NAME}/direction_calculus.cpp
-# )
+add_library(direction_calculus src/DirectionCalculus.cpp)
 
 # Declare a cpp executable
  add_executable(direction_calculus_node src/direction_calculus_node.cpp)
@@ -31,6 +30,7 @@ include_directories(
 
 ##Specify libraries to link a library or executable target against
  target_link_libraries(direction_calculus_node
+   DirectionCalculus
    ${catkin_LIBRARIES}
    ${OpenCV_LIBRARIES}
  )

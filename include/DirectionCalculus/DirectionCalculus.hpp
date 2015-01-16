@@ -1,0 +1,61 @@
+#include <ros/ros.h>
+#include <sensor_msgs/image_encodings.h>
+#include <geometry_msgs/Point.h>
+#include <image_transport/image_transport.h>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <cv_bridge/cv_bridge.h>
+#include <iostream>
+#include <cmath>
+#include <math.h>
+#include "opencv2/video/tracking.hpp"
+
+class DirectionCalculus
+{
+
+    public:
+
+    	DirectionCalculus(ros::NodeHandle& nh);
+        ~LaserTreshoold();
+
+    	void DisparityCallback(const ImageConstPtr& disp);
+    	void init();
+	
+    	ros::NodeHandle nodehandle_;
+    	
+    
+    	
+
+    //filtering variables
+    static double distance=0, x=0, y=0;
+    static int param_high=30, param_low=3;	//Mayor y menor longitud permitida para descartar outliers
+
+    //OpenCV variables
+    static Mat err;
+    static Mat translation_prev;
+    static Mat translation_;
+    static Rect region_of_interest;
+
+    //features variables
+    //static vector<Point2f> OldFeatures;
+    static vector<Point2f> NewFeatures;
+    static vector<Point2f> FeaturesDetected;
+
+    //movement calculation's variables
+    static double angle;
+    double angles[];
+    int position_in_angles=0;
+    int max_position;
+
+    //More repetitive angle calculation's variable
+    double repited_angle[];
+    int number_of_repetitions[];
+    int repited_angle_counter;
+    int size_repited_angle;
+    int max_repetition;
+    double max_value;
+    bool esta=false;
+
+    //Mean variables
+    int number_of_elements=0;
+    double final_angle_;
