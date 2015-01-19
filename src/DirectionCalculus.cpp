@@ -1,38 +1,21 @@
 #include <DirectionCalculus.hpp>
 
+using namespace cv;
+using namespace std;
+using namespace DirectionCalculus;
 
-Direct
-LaserTreshoold::LaserTreshoold(ros::NodeHandle &nh)
+DirectionCalculus::DirectionCalculus(ros::NodeHandle &nh)
 {
     nodehandle_ = nh;
-    scan_sub_ = nodehandle_.subscribe("scan", 1, &LaserTreshoold::scanCallback, this);
-    scan_pub_ = nodehandle_.advertise<sensor_msgs::LaserScan>("treshoold", 1000);
-    nodehandle_.getParam("/threshoold_value",threshold_string_value_);
-    threshold_value_= atof(threshold_string_value_.c_str());
+    image_transport::ImageTransport it(nh);
+    image_transport::Subscriber sub = it.subscribe("topic's name", 1, disparityCallback);
 }
 
 // Destructor
-LaserTreshoold::~LaserTreshoold(){}
+DirectionCalculus::~DirectionCalculus(){}
 
 // Init
-void LaserTreshoold::init(){}
-
-//ScanCallback implementation
-//void LaserTreshoold::scanCallback(sensor_msgs::LaserScan scan_msg)
-void LaserTreshoold::scanCallback(const sensor_msgs::LaserScan &scan_msg)
-{
-
-
-
-
-
-
-
-
-
-
-
-
+void DirectionCalculus::init(){}
 
 void disparityCallback(const ImageConstPtr& disp)
 {
@@ -49,63 +32,27 @@ void disparityCallback(const ImageConstPtr& disp)
 }
 
 
-void position_calculus()
+double position_calculus()
 {
-    //bucle control variables
-    static int i=0, j=0, a=0;
-
-    //filtering variables
-    static double distance=0, x=0, y=0;
-    static int param_high=30, param_low=3;	//Mayor y menor longitud permitida para descartar outliers
-
-    //OpenCV variables
-    static Mat err;
-    static Mat translation_prev;
-    static Mat translation;
-    static Rect region_of_interest;
-
-    //features variables
-    //static vector<Point2f> OldFeatures;
-    static vector<Point2f> NewFeatures;
-    static vector<Point2f> FeaturesDetected;
-
-    //movement calculation's variables
-    static double angle;
-    double angles[];
-    int position_in_angles=0;
-    int max_position;
-
-    //More repetitive angle calculation's variable
-    double repited_angle[];
-    int number_of_repetitions[];
-    int repited_angle_counter;
-    int size_repited_angle;
-    int max_repetition;
-    double max_value;
-    bool esta=false;
-
-    //Mean variables
-    int number_of_elements=0;
-    double final_angle;
-
-    //Obtenemos el tamaño de la imagen
+    //Get the image size
     int rows = image.rows;
     int cols = image.cols;
     cv::Size s = image.size();
     rows = s.height;
     cols = s.width;
 
-    //Ajustamos un ROI según el tamaño de la imagen
-    region_of_interest = Rect (0, 0, 0.3*cols, 0.5*rows);
+    //Get the ROI of the botom area (translation movement)
+    region_of_interest = Rect (0, 0.7*rows, cols, rows);
     translation = image(region_of_interest);
 
     //Optical Flow Calculus
-    //static vector<uchar> FeaturesDetected;
     goodFeaturesToTrack(translation, NewFeatures, 500, 0.01, 10, Mat(), 3, 0, 0.04);
+
     if (first_atempt)
     {
         OldFeatures = NewFeatures;
         first_atempt = false;
+
     }
 
     else
@@ -129,6 +76,18 @@ void position_calculus()
                 }
             }
         }
+
+
+
+
+
+
+
+
+
+
+
+
 
         max_position=position_in_angles;
 

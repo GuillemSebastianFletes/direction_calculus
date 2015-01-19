@@ -1,0 +1,40 @@
+#include <ros/ros.h>
+#include <sensor_msgs/image_encodings.h>
+#include <geometry_msgs/Point.h>
+#include <image_transport/image_transport.h>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <cv_bridge/cv_bridge.h>
+#include <iostream>
+#include <cmath>
+#include <math.h>
+#include "opencv2/video/tracking.hpp"
+
+using namespace cv;
+using namespace std;
+
+#define PI 3.14159265
+
+static Mat image;//, translation, rotation;
+static Mat translation;
+static vector<Point2f> OldFeatures;
+bool first_atempt = true;
+
+
+
+
+
+int main(int argc, char **argv)
+{
+    ros::init(argc, argv, "overtaking");
+    ros::NodeHandle nh;
+    ros::Rate loop_rate(10); // Hz
+
+    while(ros::ok())
+    {
+        ros::spinOnce();
+        position_calculus();//this function is going to calculate the direction
+        loop_rate.sleep();
+    }
+
+}
