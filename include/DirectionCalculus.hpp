@@ -10,21 +10,27 @@
 #include <math.h>
 #include "opencv2/video/tracking.hpp"
 
+using namespace cv;
+using namespace std;
+
+
 class DirectionCalculus
 {
     private:
-	/bucle control variables
-    static int i=0, j=0, a=0;
+    //bucle control variables
+    //static int i=0, j=0, a=0;
 
     //filtering variables
-    static double distance=0, x=0, y=0;
-    static int param_high=30, param_low=3;	//Mayor y menor longitud permitida para descartar outliers
+    //static double distance=0, x=0, y=0;
+    //static int param_high=30, param_low=3;	//Mayor y menor longitud permitida para descartar outliers
 
     //OpenCV variables
+
     static Mat err;
     static Mat translation_prev;
     static Mat translation;
     static Rect region_of_interest;
+    static Mat imatge;
 
     //features variables
     static vector<Point2f> NewFeatures;
@@ -34,7 +40,7 @@ class DirectionCalculus
     //movement calculation's variables
     static double angle;
     double angles[];
-    int position_in_angles=0;
+    //int position_in_angles=0;
     int max_position;
 
     //More repetitive angle calculation's variable
@@ -44,13 +50,20 @@ class DirectionCalculus
     int size_repited_angle;
     int max_repetition;
     double max_value;
-    bool esta=false;
+    bool esta;
 
     //Mean variables
-    int number_of_elements=0;
+    //int number_of_elements=0;
    
 
     public:
 
-    	 double final_angle;
-	 double final_position;
+    DirectionCalculus(ros::NodeHandle &nh);
+    ~DirectionCalculus();
+
+    // Init
+    void init();
+    void disparityCallback(const sensor_msgs::ImageConstPtr& disp);
+    double position_calculus();
+    double final_angle;
+    double final_position;

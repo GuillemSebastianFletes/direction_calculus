@@ -8,19 +8,20 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   geometry_msgs
   sensor_msgs
+  message_filters
 )
 
 
 catkin_package()
 
-include_directories(include)
+##include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
 )
 
 ## Declare a cpp library
-add_library(direction_calculus src/DirectionCalculus.cpp)
+##add_library(direction_calculus src/DirectionCalculus.cpp)
 
 # Declare a cpp executable
  add_executable(direction_calculus_node src/direction_calculus_node.cpp)
@@ -31,7 +32,7 @@ add_library(direction_calculus src/DirectionCalculus.cpp)
 
 ##Specify libraries to link a library or executable target against
  target_link_libraries(direction_calculus_node
-   DirectionCalculus
+  ## DirectionCalculus
    ${catkin_LIBRARIES}
    ${OpenCV_LIBRARIES}
  )
